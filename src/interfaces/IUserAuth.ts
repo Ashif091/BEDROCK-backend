@@ -10,4 +10,5 @@ export interface IUserAuth {
     refreshToken: string;
   };
   verifyUser(email: string, token: string): Promise<User | null>;
+  partialUpdateUser(id: string, data: Partial<User>): Promise<User | null>;
 } 

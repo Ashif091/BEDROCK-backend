@@ -8,6 +8,7 @@ const WorkspaceSchema = new Schema(
       ref: "User",
       required: true,
     },
+    icon: {type: String},
     collaborators: [{type: Schema.Types.ObjectId, ref: "User"}],
     documents:[{type: Schema.Types.ObjectId, ref: "Document"}],
   },

@@ -23,8 +23,13 @@ router.post(
   controller.onRegisterUser.bind(controller)
 )
 router.get("/verify-email", controller.onVerifyUser.bind(controller))
-router.post("/login", controller.onLoginUser.bind(controller));
-router.get("/token-check",validateToken)
-
+router.post("/login", controller.onLoginUser.bind(controller))
+router.get("/logout", controller.onUserLogout.bind(controller))
+router.get("/token-check", validateToken)
+router.patch(
+  "/user",
+  validateToken,
+  controller.onPartialUpdateUser.bind(controller)
+)
 
 export default router

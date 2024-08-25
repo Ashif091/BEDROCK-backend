@@ -50,7 +50,7 @@ export class UserRepository implements IUserRepository {
     };
     return newUser;
   }
-  async update(id: string, data: any): Promise<User | null> {
+  async update(id: string, data:  Partial<User>): Promise<User | null> {
     const updatedUser = await UserModel.findOneAndUpdate(
       { _id: id },
       { $set: data },
@@ -61,7 +61,6 @@ export class UserRepository implements IUserRepository {
         _id: updatedUser._id.toString(),
         fullname: updatedUser.fullname,
         email: updatedUser.email,
-        password: updatedUser.password|| undefined,
         profile: updatedUser.profile || undefined,
         verify_token: updatedUser.verify_token|| undefined,
         verified: updatedUser.verified,

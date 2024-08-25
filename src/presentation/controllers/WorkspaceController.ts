@@ -11,7 +11,8 @@ export class WorkspaceController {
 
   async onCreateWorkspace(req: Request, res: Response, next: NextFunction) {
     try {
-      const {name, userId} = req.body
+      const userId = req.userId as string
+      const {name} = req.body
       const data: Workspace = {
         title: name.trim(),
         workspaceOwner: userId,
@@ -19,7 +20,8 @@ export class WorkspaceController {
       if (name.trim().length === 0) {
         return res.status(409).json({error: "Enter valid name"})
       }
-      if (!this.workspaceService.isWorkspaceNameAvailable(data)) {
+      const isAvailable =await this.workspaceService.isWorkspaceNameAvailable(data)
+      if (isAvailable) {
         return res.status(409).json({error: "workspaceService Already exits"})
       }
       const response = await this.workspaceService.createWorkspace(data)
@@ -34,7 +36,7 @@ export class WorkspaceController {
     next: NextFunction
   ) {
     try {
-      const ownerId = req.body.userId
+      const ownerId = req.userId
 
       if (!ownerId) {
         return res.status(400).json({error: "Workspace owner ID is required"})
@@ -85,7 +87,8 @@ export class WorkspaceController {
     next: NextFunction
   ) {
     try {
-      const {name, userId} = req.body
+      const userId = req.userId as string
+      const {name} = req.body
       console.log("daata : ", name, userId)
 
       if (!name || !userId) {

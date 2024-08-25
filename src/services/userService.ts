@@ -93,4 +93,8 @@ export class authService implements IUserAuth {
       return null;
     }
   }
+  
+  async partialUpdateUser(id: string, data: Partial<User>): Promise<User | null> {
+    return await this.repository.update(id, data);
+  }
 }

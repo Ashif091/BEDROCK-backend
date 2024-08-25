@@ -13,7 +13,6 @@ export class WorkspaceService implements IWorkspaceService {
   }
 
   async createWorkspace(data:createData): Promise<Workspace> {
-    
     const newWorkspace = await this.workspaceRepository.create(data)
     // created info sent to the email ----------------
     // if (this.mailer) {

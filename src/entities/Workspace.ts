@@ -3,6 +3,7 @@ export interface Workspace {
   title: string
   workspaceOwner: string 
   collaborators?: string[] 
+  icon?: string
   documents?: string[] 
   createdAt?: Date
   updatedAt?: Date

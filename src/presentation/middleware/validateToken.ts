@@ -29,7 +29,7 @@ export const validateToken = async (
           .status(403)
           .json({message: "access to the requested resource is forbidden."})
         } else {
-          req.body.userId  = data.userId
+          req.userId  = data.userId
           return next()
         }
       })
@@ -60,7 +60,7 @@ export const validateToken = async (
             maxAge:15 * 60 * 1000,
           })
           res.setHeader("Authorization", `Bearer ${accessToken}`)
-          req.body.userId  = data.userId
+          req.userId  = data.userId
            return next()
         }
       )

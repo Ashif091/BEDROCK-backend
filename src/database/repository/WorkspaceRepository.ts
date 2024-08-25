@@ -23,7 +23,7 @@ export class WorkspaceRepository implements IWorkspaceRepository {
     return WorkspaceModel.findOne({ title: data.title, workspaceOwner: data.workspaceOwner });
   }
   async findAllByOwnerId(ownerId: string): Promise<Workspace[]> {
-    const workspaces = await WorkspaceModel.find({ workspaceOwner: ownerId });
+    const workspaces = await WorkspaceModel.find({ workspaceOwner: ownerId })
   
     const formattedWorkspaces: Workspace[] = workspaces.map((workspace) => ({
       _id: workspace._id.toString(),
@@ -70,6 +70,7 @@ export class WorkspaceRepository implements IWorkspaceRepository {
         _id: updatedWorkspace._id.toString(),
         title: updatedWorkspace.title,
         workspaceOwner: updatedWorkspace.workspaceOwner.toString(),
+        icon: updatedWorkspace.icon?.toString()||undefined,
         collaborators: updatedWorkspace.collaborators?.map((collaborator) => collaborator.toString())||undefined,
         documents: updatedWorkspace.documents?.map((document) => document.toString())||undefined,
         createdAt: updatedWorkspace.createdAt,
