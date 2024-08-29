@@ -8,6 +8,7 @@ import {Mailer} from "../../external-libraries/mailer"
 import {Bcrypt} from "../../external-libraries/bcrypt"
 import {Token} from "../../external-libraries/Token"
 import {validateToken} from "../middleware/validateToken"
+import passport from "passport"
 
 const repository = new UserRepository()
 const mailer = new Mailer()
@@ -22,14 +23,21 @@ router.post(
   validateRequest(userSchema),
   controller.onRegisterUser.bind(controller)
 )
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  controller.googleCallbackController.bind(controller)
+);
 router.get("/verify-email", controller.onVerifyUser.bind(controller))
 router.post("/login", controller.onLoginUser.bind(controller))
 router.get("/logout", controller.onUserLogout.bind(controller))
-router.get("/token-check", validateToken)
+// router.get("/token-check", validateToken)
 router.patch(
   "/user",
   validateToken,
   controller.onPartialUpdateUser.bind(controller)
 )
+router.get("/users/me", validateToken, controller.onUserFind.bind(controller));
 
 export default router

@@ -26,6 +26,56 @@ export class authController {
       next(error)
     }
   }
+  async googleCallbackController(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      console.log("call back fun in controller with user data : ",req.user)
+      const user = req.user as any
+
+      if (!user) {
+        return res.status(401).json({message: "Authentication failed"})
+      }
+      const {accessToken, refreshToken} = this.authService.generateToken(
+        user._id
+      )
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      res.cookie("accessToken", accessToken, {
+        httpOnly: false,
+        secure: true,
+        sameSite: "none",
+        maxAge:15 * 60 * 1000,
+      })
+     return  res.redirect(process.env.CLIENT_URL as string)
+    } catch (error) {
+      next(error)
+    }
+  }
+  async onUserFind(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId as string;
+      const user = await this.authService.findUserById(userId);
+
+      let data = {
+        id: user?._id,
+        fullname: user?.fullname,
+        email: user?.email,
+        verified: user?.verified,
+        profile: user?.profile,
+      };
+      return res.json(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   async onVerifyUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -102,28 +152,31 @@ export class authController {
       })
       return res.status(200).json({message: "Logged out successfully"})
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
   async onPartialUpdateUser(req: Request, res: Response, next: NextFunction) {
     console.log("req, got ")
     try {
       const userId = req.userId
-      console.log("req, got user id: ",userId)
+      console.log("req, got user id: ", userId)
       if (!userId) {
         return res.status(400).json({error: "User ID is required"})
       }
-      const updateData: Partial<User> = req.body;
-      
-      const updatedUser = await this.authService.partialUpdateUser(userId, updateData);
+      const updateData: Partial<User> = req.body
+
+      const updatedUser = await this.authService.partialUpdateUser(
+        userId,
+        updateData
+      )
 
       if (updatedUser) {
-        return res.status(200).json(updatedUser);
+        return res.status(200).json(updatedUser)
       } else {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({error: "User not found"})
       }
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
 }

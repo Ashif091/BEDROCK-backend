@@ -1,12 +1,14 @@
 import express, {Application} from "express"
-import authRouter from "./presentation/routes/authRoutes"
-import workspaceRoutes from "./presentation/routes/workspaceRoutes"
 import {connectToDatabase} from "./database/connection-config"
 import cookieParser from 'cookie-parser';
-import session from "express-session";
-import {errorHandler} from "./presentation/middleware/errorHandler"
+import passport from 'passport';
 import cors from "cors";
 import dotenv from "dotenv"
+import session from "express-session";
+import './config/passport';
+import workspaceRoutes from "./presentation/routes/workspaceRoutes"
+import authRouter from "./presentation/routes/authRoutes"
+import {errorHandler} from "./presentation/middleware/errorHandler"
 dotenv.config()
 
 const app: Application = express()
@@ -31,6 +33,7 @@ app.use(
 const port = process.env.PORT
 connectToDatabase()
   .then(() => {
+    app.use(passport.initialize());
     app.use("/auth", authRouter)
     app.use("/workspace",workspaceRoutes)
     app.use(errorHandler)
