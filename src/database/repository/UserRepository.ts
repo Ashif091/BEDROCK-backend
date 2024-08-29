@@ -50,15 +50,49 @@ export class UserRepository implements IUserRepository {
     }
     return newUser
   }
+  async createOrUpdateGithubUser(profile: any) {
+    console.log("GitHub profile received:", profile)
+
+    const existingUser = await UserModel.findOne({githubId: profile.id})
+
+    if (existingUser) {
+      return existingUser
+    } else {
+      console.log("ther is no user , now we can create");
+      
+      const userByEmail = await UserModel.findOne({
+        email: profile.emails[0]?.value,
+      })
+      if (userByEmail) {
+        userByEmail.githubId = profile.id
+        await userByEmail.save()
+        return userByEmail
+      }
+      console.log("ther is no user with email , now we can create");
+
+      const newUser = new UserModel({
+        fullname: profile.displayName,
+        email: profile.emails[0]?.value,
+        githubId: profile.id,
+        profile: profile.photos[0]?.value, 
+        verified: true,
+      })
+      await newUser.save()
+      return newUser
+    }
+  }
+
   async createOrUpdateGoogleUser(profile: any) {
-    console.log("get google profile :", profile);
-    
+    console.log("get google profile :", profile)
+
     const existingUser = await UserModel.findOne({googleId: profile.id})
 
     if (existingUser) {
       return existingUser
     } else {
-      const userByEmail = await UserModel.findOne({email: profile.emails[0].value})
+      const userByEmail = await UserModel.findOne({
+        email: profile.emails[0].value,
+      })
 
       if (userByEmail) {
         userByEmail.googleId = profile.id

@@ -26,7 +26,7 @@ export class authController {
       next(error)
     }
   }
-  async googleCallbackController(
+  async authCallbackController(
     req: Request,
     res: Response,
     next: NextFunction
