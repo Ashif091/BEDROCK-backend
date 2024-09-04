@@ -9,6 +9,7 @@ export class WorkspaceRepository implements IWorkspaceRepository {
       const workspaceData: Workspace = {
         _id: workspace._id.toString(),
         title: workspace.title,
+        icon:workspace.icon?.toString(),
         workspaceOwner: workspace.workspaceOwner.toString(),
         collaborators: workspace.collaborators?.map((collaborator) => collaborator.toString())||undefined,
         documents: workspace.documents.map((document) => document.toString())||undefined,
@@ -28,6 +29,7 @@ export class WorkspaceRepository implements IWorkspaceRepository {
     const formattedWorkspaces: Workspace[] = workspaces.map((workspace) => ({
       _id: workspace._id.toString(),
       title: workspace.title,
+      icon:workspace.icon?.toString(),
       workspaceOwner: workspace.workspaceOwner.toString(),
       collaborators: workspace.collaborators?.map((collaborator) => collaborator.toString()) || undefined,
       documents: workspace.documents?.map((document) => document.toString()) || undefined,

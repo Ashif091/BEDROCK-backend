@@ -27,7 +27,7 @@ router.get(
   controller.onGetWorkspaceById.bind(controller)
 )
  
-router.put(
+router.patch(
   "/update/:id",
   validateToken, 
   controller.onUpdateWorkspace.bind(controller)

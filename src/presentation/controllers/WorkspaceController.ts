@@ -67,6 +67,8 @@ export class WorkspaceController {
 
   async onUpdateWorkspace(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log("workspace update req with data ",req.body);
+      
       const workspaceId = req.params.id
       const updateData: Partial<Workspace> = req.body
       const updatedWorkspace = await this.workspaceService.updateWorkspace(
