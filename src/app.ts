@@ -6,8 +6,9 @@ import cors from "cors";
 import dotenv from "dotenv"
 import session from "express-session";
 import './config/passport';
-import workspaceRoutes from "./presentation/routes/workspaceRoutes"
 import authRouter from "./presentation/routes/authRoutes"
+import workspaceRoutes from "./presentation/routes/workspaceRoutes"
+import documentRoutes from "./presentation/routes/documentRoutes"
 import {errorHandler} from "./presentation/middleware/errorHandler"
 dotenv.config()
 
@@ -36,6 +37,7 @@ connectToDatabase()
     app.use(passport.initialize());
     app.use("/auth", authRouter)
     app.use("/workspace",workspaceRoutes)
+    app.use("/doc",documentRoutes)
     app.use(errorHandler)
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`)

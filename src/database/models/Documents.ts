@@ -1,13 +1,20 @@
 import mongoose, {Schema} from "mongoose"
 
 const DocumentSchema = new Schema(
-  { WorkspaceId:{
-    type: Schema.Types.ObjectId,
-    ref: "Workspace",
-    required: true,
-  },
+  {
+    workspaceId: {
+      type: Schema.Types.ObjectId,
+      ref: "Workspace",
+      required: true,
+    },
     title: {type: String, required: true},
-    content: { type: String },
+    content: {type: String},
+    edges: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Workspace",
+      },
+    ],
   },
   {timestamps: true}
 )
