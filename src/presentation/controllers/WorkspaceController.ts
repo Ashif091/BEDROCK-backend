@@ -20,7 +20,9 @@ export class WorkspaceController {
       if (name.trim().length === 0) {
         return res.status(409).json({error: "Enter valid name"})
       }
-      const isAvailable =await this.workspaceService.isWorkspaceNameAvailable(data)
+      const isAvailable = await this.workspaceService.isWorkspaceNameAvailable(
+        data
+      )
       if (isAvailable) {
         return res.status(409).json({error: "workspaceService Already exits"})
       }
@@ -67,8 +69,8 @@ export class WorkspaceController {
 
   async onUpdateWorkspace(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("workspace update req with data ",req.body);
-      
+      console.log("workspace update req with data ", req.body)
+
       const workspaceId = req.params.id
       const updateData: Partial<Workspace> = req.body
       const updatedWorkspace = await this.workspaceService.updateWorkspace(
@@ -113,6 +115,25 @@ export class WorkspaceController {
       } else {
         return res.status(200).json({available: false})
       }
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async liveblocksAuth(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId as string
+      const userData = await this.workspaceService.userInfo(userId)
+      const userInfo = {
+        _id:userData?._id,
+        name: userData?.fullname,
+        email: userData?.email,
+        avatar: userData?.profile || undefined,
+      }
+      const {room} = req.body
+      const sessionData = await this.workspaceService.authorizeLiveblocksSession(userInfo, room);
+      console.log("🚀 ~ WorkspaceController ~ liveblocksAuth ~ sessionData:", sessionData)
+      return res.status(200).json(sessionData);
     } catch (error) {
       next(error)
     }

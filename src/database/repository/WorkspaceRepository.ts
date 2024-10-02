@@ -1,6 +1,8 @@
+import { User } from "../../entities/User";
 import { Workspace } from "../../entities/Workspace";
 import { IWorkspaceRepository } from "../../interfaces/IWorkspaceRepository";
 import { Workspace as WorkspaceModel } from "../models/Workspace";
+import { User as UserModel } from "../models/User";
 
 export class WorkspaceRepository implements IWorkspaceRepository {
   async findById(id: string): Promise<Workspace | null> {
@@ -22,6 +24,22 @@ export class WorkspaceRepository implements IWorkspaceRepository {
   }
   async findByNameAndOwner(data:Workspace): Promise<Workspace | null> {
     return WorkspaceModel.findOne({ title: data.title, workspaceOwner: data.workspaceOwner });
+  }
+  async findUserById(id:string): Promise<User | null> {
+    const User = await UserModel.findOne({_id: id});
+    if (User) {
+      const userData: User = {
+        _id: User._id.toString(),
+        fullname: User.fullname,
+        email: User.email,
+        password: User.password || undefined,
+        profile: User.profile || undefined,
+        verify_token: User.verify_token || undefined,
+        verified: User.verified,
+      }
+      return userData
+    }
+    return null
   }
   async findAllByOwnerId(ownerId: string): Promise<Workspace[]> {
     const workspaces = await WorkspaceModel.find({ workspaceOwner: ownerId })

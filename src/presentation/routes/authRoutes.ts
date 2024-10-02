@@ -38,7 +38,6 @@ router.get(
 router.get("/verify-email", controller.onVerifyUser.bind(controller))
 router.post("/login", controller.onLoginUser.bind(controller))
 router.get("/logout", controller.onUserLogout.bind(controller))
-// router.get("/token-check", validateToken)
 router.patch(
   "/user",
   validateToken,

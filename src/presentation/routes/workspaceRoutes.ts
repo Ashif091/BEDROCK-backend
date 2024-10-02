@@ -39,6 +39,11 @@ router.post(
   controller.checkWorkspaceNameAvailability.bind(controller)
 ); 
 
+router.post(
+  "/liveblocks-auth",
+  validateToken,
+  controller.liveblocksAuth.bind(controller)
+); 
 
 export default router
  
