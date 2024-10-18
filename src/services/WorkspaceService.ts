@@ -73,7 +73,6 @@ export class WorkspaceService implements IWorkspaceService {
     const liveblocks = new Liveblocks({
       secret: process.env.LIVEBLOCKS_SECRET_KEY!,
     })
-    console.log("🚀 ~ WorkspaceService ~ liveblocks:", liveblocks)
     const session = liveblocks.prepareSession(user._id as string, {
       userInfo: { 
         name: user.name,
@@ -81,13 +80,10 @@ export class WorkspaceService implements IWorkspaceService {
         avatar: user.avatar,
       },
     });
-    console.log("🚀 ~ WorkspaceService ~ session:", session)
     if (room) {
-      console.log("🚀 ~ WorkspaceService ~ room:", room)
       session.allow(room, session.FULL_ACCESS);
     }
     const { body } = await session.authorize();
-    console.log("🚀 ~ WorkspaceService ~ body:", body)
     return body;
   }
 }

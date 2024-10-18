@@ -132,7 +132,6 @@ export class WorkspaceController {
       }
       const {room} = req.body
       const sessionData = await this.workspaceService.authorizeLiveblocksSession(userInfo, room);
-      console.log("🚀 ~ WorkspaceController ~ liveblocksAuth ~ sessionData:", sessionData)
       return res.status(200).json(sessionData);
     } catch (error) {
       next(error)
