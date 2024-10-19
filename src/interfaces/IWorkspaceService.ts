@@ -1,4 +1,5 @@
 import { User } from "../entities/User";
+import { UserAttachment } from "../entities/UserAttachment";
 import { Workspace } from "../entities/Workspace";
 interface liveblocks_user {
   _id: string | undefined;
@@ -14,4 +15,10 @@ export interface IWorkspaceService {
   getAllWorkspacesByOwner(ownerId: string): Promise<Workspace[]>;
   userInfo(id: string): Promise<User | null>;
   authorizeLiveblocksSession(user: liveblocks_user, room: string): Promise<any | null>
+  addCollaboratorToWorkspace(workspaceId: string, email: string,role:string): Promise<Workspace | null>;
+  onRemoveMember(
+    workspaceId: string,
+    collaboratorEmail: string
+  ): Promise<Workspace | null>
+  getUserAttachmentByEmail(userEmail: string): Promise<UserAttachment | null> 
 }

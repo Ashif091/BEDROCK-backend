@@ -125,16 +125,89 @@ export class WorkspaceController {
       const userId = req.userId as string
       const userData = await this.workspaceService.userInfo(userId)
       const userInfo = {
-        _id:userData?._id,
+        _id: userData?._id,
         name: userData?.fullname,
         email: userData?.email,
         avatar: userData?.profile || undefined,
       }
       const {room} = req.body
-      const sessionData = await this.workspaceService.authorizeLiveblocksSession(userInfo, room);
-      return res.status(200).json(sessionData);
+      const sessionData =
+        await this.workspaceService.authorizeLiveblocksSession(userInfo, room)
+      return res.status(200).json(sessionData)
     } catch (error) {
       next(error)
+    }
+  }
+
+  async onUpdateMember(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {email, workspaceId,role} = req.body
+
+      if (!email || email.trim().length === 0) {
+        return res.status(400).json({error: "Email is required"})
+      }
+
+      const workspace = await this.workspaceService.findWorkspaceById(
+        workspaceId
+      )
+      if (!workspace) {
+        return res.status(404).json({error: "Workspace not found"})
+      }
+
+      if (workspace.collaborators?.includes(email)) {
+        return res.status(409).json({error: "Collaborator already exists"})
+      }
+      const updatedWorkspace =
+        await this.workspaceService.addCollaboratorToWorkspace(
+          workspaceId,
+          email,
+          role,
+        )
+
+      if (!updatedWorkspace) {
+        return res.status(500).json({error: "Failed to add collaborator"})
+      }
+
+      return res.status(200).json(updatedWorkspace)
+    } catch (error) {
+      next(error)
+    }
+  }
+  async onRemoveMember(req: Request, res: Response) {
+    const { workspaceId, email } = req.body;
+
+    try {
+      const updatedWorkspace = await this.workspaceService.onRemoveMember(
+        workspaceId,
+        email
+      );
+
+      if (!updatedWorkspace) {
+        return res.status(404).json({ message: "Workspace or collaborator not found" });
+      }
+
+      return res.status(200).json({ message: "Collaborator removed successfully", workspace: updatedWorkspace });
+    } catch (error) {
+      console.error("Error removing collaborator:", error);
+      return res.status(500).json({ message: "An error occurred while removing the collaborator" });
+    }
+  }
+
+  async onGetAttachmentByEmail(req: Request, res: Response): Promise<void> {
+    const userEmail = req.params.email;
+
+    try {
+      const userAttachment = await this.workspaceService.getUserAttachmentByEmail(userEmail);
+
+      if (!userAttachment) {
+        res.status(404).json({ message: "User attachment not found" });
+        return;
+      }
+
+      res.status(200).json(userAttachment);
+    } catch (error) {
+      console.error("Error fetching user attachment:", error);
+      res.status(500).json({ message: "Server error" });
     }
   }
 }

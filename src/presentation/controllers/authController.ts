@@ -77,6 +77,7 @@ export class authController {
   }
 
 
+
   async onVerifyUser(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.query.token as string
@@ -177,6 +178,28 @@ export class authController {
       }
     } catch (error) {
       next(error)
+    }
+  }
+  async onUserFindByEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {email} = req.params; 
+      const user = await this.authService.findUserByEmail(email);
+
+      if (!user) {
+        return res.status(201).json({});
+      }
+
+      const userData = {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        profile: user.profile,
+        verified: user.verified,
+      };
+
+      return res.status(200).json(userData);
+    } catch (error) {
+      next(error);
     }
   }
 }

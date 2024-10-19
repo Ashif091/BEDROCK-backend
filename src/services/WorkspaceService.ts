@@ -5,16 +5,17 @@ import {IWorkspaceRepository} from "../interfaces/IWorkspaceRepository"
 import {IWorkspaceService} from "../interfaces/IWorkspaceService"
 import {Liveblocks} from "@liveblocks/node"
 import dotenv from "dotenv"
+import { UserAttachment } from "../entities/UserAttachment"
 dotenv.config()
 interface createData {
   title: string
   workspaceOwner: string
 }
 interface liveblocks_user {
-  _id: string | undefined;
-  name: string | undefined;
-  email: string | undefined;
-  avatar: string | undefined;
+  _id: string | undefined
+  name: string | undefined
+  email: string | undefined
+  avatar: string | undefined
 }
 export class WorkspaceService implements IWorkspaceService {
   private workspaceRepository: IWorkspaceRepository
@@ -67,23 +68,50 @@ export class WorkspaceService implements IWorkspaceService {
     user: liveblocks_user,
     room: string
   ): Promise<any | null> {
-    if(!process.env.LIVEBLOCKS_SECRET_KEY){
-      throw new Error(`key file not found`);
+    if (!process.env.LIVEBLOCKS_SECRET_KEY) {
+      throw new Error(`key file not found`)
     }
     const liveblocks = new Liveblocks({
       secret: process.env.LIVEBLOCKS_SECRET_KEY!,
     })
     const session = liveblocks.prepareSession(user._id as string, {
-      userInfo: { 
+      userInfo: {
         name: user.name,
         email: user.email,
         avatar: user.avatar,
       },
-    });
+    })
     if (room) {
-      session.allow(room, session.FULL_ACCESS);
+      session.allow(room, session.FULL_ACCESS)
     }
-    const { body } = await session.authorize();
-    return body;
+    const {body} = await session.authorize()
+    return body
+  }
+  async addCollaboratorToWorkspace(
+    workspaceId: string,
+    email: string,
+    role:string,
+  ): Promise<Workspace | null> {
+    return this.workspaceRepository.updateCollaboratorById(workspaceId, email,role)
+  }
+
+  async onRemoveMember(
+    workspaceId: string,
+    collaboratorEmail: string
+  ): Promise<Workspace | null> {
+    const updatedWorkspace = await this.workspaceRepository.removeCollaboratorById(
+      workspaceId,
+      collaboratorEmail
+    );
+
+    if (!updatedWorkspace) {
+      return null;
+    }
+
+    return updatedWorkspace;
+  }
+  async getUserAttachmentByEmail(userEmail: string): Promise<UserAttachment | null> {
+    const userAttachment = await this.workspaceRepository.findUserAttachmentByEmail(userEmail);
+    return userAttachment;
   }
 }

@@ -44,6 +44,12 @@ router.post(
   validateToken,
   controller.liveblocksAuth.bind(controller)
 ); 
+router.post(
+  "/update-member",
+  validateToken,
+  controller.onUpdateMember.bind(controller)
+); 
+router.delete("/remove-member",validateToken, controller.onRemoveMember.bind(controller))
 
 export default router
  

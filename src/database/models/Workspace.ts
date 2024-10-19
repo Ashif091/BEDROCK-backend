@@ -1,4 +1,11 @@
 import mongoose, {Schema} from "mongoose"
+const CollaboratorSchema = new Schema(
+  {
+    email: { type: String, required: false },
+    role: { type: String, required: false }, 
+  },
+  { _id: false } 
+);
 
 const WorkspaceSchema = new Schema(
   {
@@ -9,7 +16,7 @@ const WorkspaceSchema = new Schema(
       required: true,
     },
     icon: {type: String},
-    collaborators: [{type: Schema.Types.ObjectId, ref: "User"}],
+    collaborators: [CollaboratorSchema],
     documents:[{type: Schema.Types.ObjectId, ref: "Document"}],
   },
   {timestamps: true}

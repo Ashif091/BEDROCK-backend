@@ -44,5 +44,6 @@ router.patch(
   controller.onPartialUpdateUser.bind(controller)
 )
 router.get("/users/me", validateToken, controller.onUserFind.bind(controller));
+router.get("/user/email/:email", controller.onUserFindByEmail.bind(controller));
 
 export default router
