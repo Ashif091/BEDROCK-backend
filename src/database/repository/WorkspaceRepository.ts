@@ -158,10 +158,10 @@ export class WorkspaceRepository implements IWorkspaceRepository {
     } else {
       workspace.collaborators.push({email: collaboratorEmail, role})
       await UserAttachmentModel.updateOne(
-        { userId: collaboratorEmail }, 
-        { $addToSet: { sharedWorkspaces: workspaceId } },
-        { upsert: true } 
-      );
+        {userId: collaboratorEmail},
+        {$addToSet: {sharedWorkspaces: workspaceId}},
+        {upsert: true}
+      )
     }
     const updatedWorkspace = await workspace.save()
     return {
@@ -197,9 +197,9 @@ export class WorkspaceRepository implements IWorkspaceRepository {
       return null
     }
     await UserAttachmentModel.updateOne(
-      { userId: collaboratorEmail }, 
-      { $pull: { sharedWorkspaces: workspaceId } } 
-    );
+      {userId: collaboratorEmail},
+      {$pull: {sharedWorkspaces: workspaceId}}
+    )
 
     return {
       _id: updatedWorkspace._id.toString(),
@@ -235,5 +235,18 @@ export class WorkspaceRepository implements IWorkspaceRepository {
         workspace._id.toString()
       ),
     }
+  }
+  async findOwnerById(id: string): Promise<any | null> {
+    const Owner = await UserModel.findOne({_id: id})
+    if (Owner) {
+      const OwnerData: any = {
+        _id: Owner._id.toString(),
+        fullname: Owner.fullname,
+        email: Owner.email,
+        profile: Owner.profile || undefined,
+      }
+      return OwnerData
+    }
+    return null
   }
 }

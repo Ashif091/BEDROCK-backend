@@ -141,7 +141,7 @@ export class WorkspaceController {
 
   async onUpdateMember(req: Request, res: Response, next: NextFunction) {
     try {
-      const {email, workspaceId,role} = req.body
+      const {email, workspaceId, role} = req.body
 
       if (!email || email.trim().length === 0) {
         return res.status(400).json({error: "Email is required"})
@@ -161,7 +161,7 @@ export class WorkspaceController {
         await this.workspaceService.addCollaboratorToWorkspace(
           workspaceId,
           email,
-          role,
+          role
         )
 
       if (!updatedWorkspace) {
@@ -174,40 +174,65 @@ export class WorkspaceController {
     }
   }
   async onRemoveMember(req: Request, res: Response) {
-    const { workspaceId, email } = req.body;
+    const {workspaceId, email} = req.body
 
     try {
       const updatedWorkspace = await this.workspaceService.onRemoveMember(
         workspaceId,
         email
-      );
+      )
 
       if (!updatedWorkspace) {
-        return res.status(404).json({ message: "Workspace or collaborator not found" });
+        return res
+          .status(404)
+          .json({message: "Workspace or collaborator not found"})
       }
 
-      return res.status(200).json({ message: "Collaborator removed successfully", workspace: updatedWorkspace });
+      return res
+        .status(200)
+        .json({
+          message: "Collaborator removed successfully",
+          workspace: updatedWorkspace,
+        })
     } catch (error) {
-      console.error("Error removing collaborator:", error);
-      return res.status(500).json({ message: "An error occurred while removing the collaborator" });
+      console.error("Error removing collaborator:", error)
+      return res
+        .status(500)
+        .json({message: "An error occurred while removing the collaborator"})
     }
   }
 
   async onGetAttachmentByEmail(req: Request, res: Response): Promise<void> {
-    const userEmail = req.params.email;
+    const userEmail = req.params.email
 
     try {
-      const userAttachment = await this.workspaceService.getUserAttachmentByEmail(userEmail);
+      const userAttachment =
+        await this.workspaceService.getUserAttachmentByEmail(userEmail)
 
       if (!userAttachment) {
-        res.status(404).json({ message: "User attachment not found" });
-        return;
+        res.status(200).json({})
+        return
       }
 
-      res.status(200).json(userAttachment);
+      res.status(200).json(userAttachment)
     } catch (error) {
-      console.error("Error fetching user attachment:", error);
-      res.status(500).json({ message: "Server error" });
+      console.error("Error fetching user attachment:", error)
+      res.status(500).json({message: "Server error"})
+    }
+  }
+  async onFindOwnerById(req: Request, res: Response): Promise<any> {
+    try {
+      const { ownerId } = req.params;
+      const ownerData = await this.workspaceService.findOwnerById(ownerId);
+
+      if (!ownerData) {
+        return res.status(404).json({ message: 'Owner not found' });
+      }
+
+      return res.status(200).json(ownerData);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
 }

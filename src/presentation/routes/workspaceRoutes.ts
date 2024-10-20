@@ -50,6 +50,16 @@ router.post(
   controller.onUpdateMember.bind(controller)
 ); 
 router.delete("/remove-member",validateToken, controller.onRemoveMember.bind(controller))
+router.get(
+  "/user-attachment/:email",
+  validateToken,
+  controller.onGetAttachmentByEmail.bind(controller)
+)
+router.get(
+  "/owner/:ownerId",
+  validateToken,
+  controller.onFindOwnerById.bind(controller)
+)
 
 export default router
  

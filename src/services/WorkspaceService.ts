@@ -114,4 +114,7 @@ export class WorkspaceService implements IWorkspaceService {
     const userAttachment = await this.workspaceRepository.findUserAttachmentByEmail(userEmail);
     return userAttachment;
   }
+  async findOwnerById(ownerId: string): Promise<any | null> {
+    return await this.workspaceRepository.findOwnerById(ownerId);
+  }
 }
