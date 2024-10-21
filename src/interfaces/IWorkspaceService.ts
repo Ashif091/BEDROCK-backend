@@ -14,7 +14,7 @@ export interface IWorkspaceService {
   isWorkspaceNameAvailable(data:Workspace): Promise<boolean>;
   getAllWorkspacesByOwner(ownerId: string): Promise<Workspace[]>;
   userInfo(id: string): Promise<User | null>;
-  authorizeLiveblocksSession(user: liveblocks_user, room: string): Promise<any | null>
+  authorizeLiveblocksSession(user: liveblocks_user, room: string,workspaceId: string): Promise<any | null>
   addCollaboratorToWorkspace(workspaceId: string, email: string,role:string): Promise<Workspace | null>;
   onRemoveMember(
     workspaceId: string,

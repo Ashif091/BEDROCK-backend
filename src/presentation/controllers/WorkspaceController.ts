@@ -130,9 +130,9 @@ export class WorkspaceController {
         email: userData?.email,
         avatar: userData?.profile || undefined,
       }
-      const {room} = req.body
+      const {room,workspaceId} = req.body
       const sessionData =
-        await this.workspaceService.authorizeLiveblocksSession(userInfo, room)
+        await this.workspaceService.authorizeLiveblocksSession(userInfo, room,workspaceId)
       return res.status(200).json(sessionData)
     } catch (error) {
       next(error)

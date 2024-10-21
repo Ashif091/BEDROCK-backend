@@ -5,7 +5,7 @@ import {IWorkspaceRepository} from "../interfaces/IWorkspaceRepository"
 import {IWorkspaceService} from "../interfaces/IWorkspaceService"
 import {Liveblocks} from "@liveblocks/node"
 import dotenv from "dotenv"
-import { UserAttachment } from "../entities/UserAttachment"
+import {UserAttachment} from "../entities/UserAttachment"
 dotenv.config()
 interface createData {
   title: string
@@ -66,7 +66,8 @@ export class WorkspaceService implements IWorkspaceService {
   }
   async authorizeLiveblocksSession(
     user: liveblocks_user,
-    room: string
+    room: string,
+    workspaceId: string
   ): Promise<any | null> {
     if (!process.env.LIVEBLOCKS_SECRET_KEY) {
       throw new Error(`key file not found`)
@@ -81,8 +82,27 @@ export class WorkspaceService implements IWorkspaceService {
         avatar: user.avatar,
       },
     })
-    if (room) {
+    const workspace = await this.findWorkspaceById(workspaceId)
+    const ownerInfo = await this.userInfo(workspace?.workspaceOwner as string)
+    if (!workspace) {
+      throw new Error(`Workspace not found`)
+    }
+    const collaboratorInfo = workspace.collaborators?.find(
+      (collaborator) => collaborator.email === user.email
+    )
+
+    if (
+      collaboratorInfo?.role === "editor" ||
+      ownerInfo?.email === user.email
+    ) {
+      console.log("Granting FULL_ACCESS to editor:", user.email)
       session.allow(room, session.FULL_ACCESS)
+    } else {
+      console.log(
+        "No matching role found. Defaulting to READ_ACCESS for:",
+        user.email
+      )
+      session.allow(room, session.READ_ACCESS)
     }
     const {body} = await session.authorize()
     return body
@@ -90,31 +110,39 @@ export class WorkspaceService implements IWorkspaceService {
   async addCollaboratorToWorkspace(
     workspaceId: string,
     email: string,
-    role:string,
+    role: string
   ): Promise<Workspace | null> {
-    return this.workspaceRepository.updateCollaboratorById(workspaceId, email,role)
+    return this.workspaceRepository.updateCollaboratorById(
+      workspaceId,
+      email,
+      role
+    )
   }
 
   async onRemoveMember(
     workspaceId: string,
     collaboratorEmail: string
   ): Promise<Workspace | null> {
-    const updatedWorkspace = await this.workspaceRepository.removeCollaboratorById(
-      workspaceId,
-      collaboratorEmail
-    );
+    const updatedWorkspace =
+      await this.workspaceRepository.removeCollaboratorById(
+        workspaceId,
+        collaboratorEmail
+      )
 
     if (!updatedWorkspace) {
-      return null;
+      return null
     }
 
-    return updatedWorkspace;
+    return updatedWorkspace
   }
-  async getUserAttachmentByEmail(userEmail: string): Promise<UserAttachment | null> {
-    const userAttachment = await this.workspaceRepository.findUserAttachmentByEmail(userEmail);
-    return userAttachment;
+  async getUserAttachmentByEmail(
+    userEmail: string
+  ): Promise<UserAttachment | null> {
+    const userAttachment =
+      await this.workspaceRepository.findUserAttachmentByEmail(userEmail)
+    return userAttachment
   }
   async findOwnerById(ownerId: string): Promise<any | null> {
-    return await this.workspaceRepository.findOwnerById(ownerId);
+    return await this.workspaceRepository.findOwnerById(ownerId)
   }
 }
