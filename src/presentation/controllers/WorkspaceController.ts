@@ -130,9 +130,13 @@ export class WorkspaceController {
         email: userData?.email,
         avatar: userData?.profile || undefined,
       }
-      const {room,workspaceId} = req.body
+      const {room, workspaceId} = req.body
       const sessionData =
-        await this.workspaceService.authorizeLiveblocksSession(userInfo, room,workspaceId)
+        await this.workspaceService.authorizeLiveblocksSession(
+          userInfo,
+          room,
+          workspaceId
+        )
       return res.status(200).json(sessionData)
     } catch (error) {
       next(error)
@@ -188,12 +192,10 @@ export class WorkspaceController {
           .json({message: "Workspace or collaborator not found"})
       }
 
-      return res
-        .status(200)
-        .json({
-          message: "Collaborator removed successfully",
-          workspace: updatedWorkspace,
-        })
+      return res.status(200).json({
+        message: "Collaborator removed successfully",
+        workspace: updatedWorkspace,
+      })
     } catch (error) {
       console.error("Error removing collaborator:", error)
       return res
@@ -222,17 +224,37 @@ export class WorkspaceController {
   }
   async onFindOwnerById(req: Request, res: Response): Promise<any> {
     try {
-      const { ownerId } = req.params;
-      const ownerData = await this.workspaceService.findOwnerById(ownerId);
+      const {ownerId} = req.params
+      const ownerData = await this.workspaceService.findOwnerById(ownerId)
 
       if (!ownerData) {
-        return res.status(404).json({ message: 'Owner not found' });
+        return res.status(404).json({message: "Owner not found"})
       }
 
-      return res.status(200).json(ownerData);
+      return res.status(200).json(ownerData)
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Internal server error' });
+      console.error(error)
+      return res.status(500).json({message: "Internal server error"})
+    }
+  }
+  async onSearchRole(req: Request, res: Response): Promise<void> {
+    try {
+      const {workspaceId, email} = req.body
+
+      const role = await this.workspaceService.searchRoleByEmail(
+        workspaceId,
+        email
+      )
+
+      if (role) {
+        res.status(200).json(role)
+      } else {
+        res
+          .status(404)
+          .json({message: "Collaborator not found or no role assigned."})
+      }
+    } catch (error) {
+      res.status(500).json({message: "Server error", error})
     }
   }
 }

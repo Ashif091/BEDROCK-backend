@@ -22,4 +22,5 @@ export interface IWorkspaceService {
   ): Promise<Workspace | null>
   getUserAttachmentByEmail(userEmail: string): Promise<UserAttachment | null> 
   findOwnerById(ownerId: string): Promise<any | null>
+  searchRoleByEmail(workspaceId: string, email: string): Promise<string | null>
 }

@@ -60,6 +60,11 @@ router.get(
   validateToken,
   controller.onFindOwnerById.bind(controller)
 )
+router.post(
+  "/search-role",
+  validateToken,
+  controller.onSearchRole.bind(controller)
+); 
 
 export default router
  

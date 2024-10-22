@@ -145,4 +145,22 @@ export class WorkspaceService implements IWorkspaceService {
   async findOwnerById(ownerId: string): Promise<any | null> {
     return await this.workspaceRepository.findOwnerById(ownerId)
   }
+  async searchRoleByEmail(
+    workspaceId: string,
+    email: string
+  ): Promise<string | null> {
+    const workspace: Workspace | null = await this.findWorkspaceById(
+      workspaceId
+    )
+
+    if (!workspace || !workspace.collaborators) {
+      return null
+    }
+
+    const collaborator = workspace.collaborators.find(
+      (collaborator) => collaborator.email === email
+    )
+
+    return collaborator?.role || null
+  }
 }
