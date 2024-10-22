@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express"
 import {IWorkspaceService} from "../../interfaces/IWorkspaceService"
 import {Workspace} from "../../entities/Workspace"
-
+import { Server } from "socket.io"; 
 export class WorkspaceController {
   private workspaceService: IWorkspaceService
 
@@ -171,6 +171,16 @@ export class WorkspaceController {
       if (!updatedWorkspace) {
         return res.status(500).json({error: "Failed to add collaborator"})
       }
+      const ownerData = await this.workspaceService.findOwnerById(workspace.workspaceOwner)
+      const notificationData = {
+        workspaceName: workspace.title,
+        workspaceIcon: workspace.icon,
+        userAddedBy:ownerData,
+        role
+      };
+
+      // Emit to the room associated with the user's email
+      req.io.to(email).emit("user-added", notificationData);
 
       return res.status(200).json(updatedWorkspace)
     } catch (error) {
