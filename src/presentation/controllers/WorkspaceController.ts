@@ -1,11 +1,14 @@
 import {NextFunction, Request, Response} from "express"
 import {IWorkspaceService} from "../../interfaces/IWorkspaceService"
 import {Workspace} from "../../entities/Workspace"
-import { Server } from "socket.io"; 
+import {Server} from "socket.io"
+import {IMailer} from "../../interfaces/IMailer"
+import newColabUser from "../utils/inviteNewColabEmail"
 export class WorkspaceController {
   private workspaceService: IWorkspaceService
-
-  constructor(workspaceService: IWorkspaceService) {
+  private mailer: IMailer
+  constructor(workspaceService: IWorkspaceService, mailer: IMailer) {
+    this.mailer = mailer;
     this.workspaceService = workspaceService
   }
 
@@ -157,10 +160,8 @@ export class WorkspaceController {
       if (!workspace) {
         return res.status(404).json({error: "Workspace not found"})
       }
+      const isRoleChange = await this.workspaceService.searchRoleByEmail(workspaceId,email)
 
-      if (workspace.collaborators?.includes(email)) {
-        return res.status(409).json({error: "Collaborator already exists"})
-      }
       const updatedWorkspace =
         await this.workspaceService.addCollaboratorToWorkspace(
           workspaceId,
@@ -171,17 +172,21 @@ export class WorkspaceController {
       if (!updatedWorkspace) {
         return res.status(500).json({error: "Failed to add collaborator"})
       }
-      const ownerData = await this.workspaceService.findOwnerById(workspace.workspaceOwner)
+      const ownerData = await this.workspaceService.findOwnerById(
+        workspace.workspaceOwner
+      )
       const notificationData = {
         workspaceName: workspace.title,
         workspaceIcon: workspace.icon,
-        userAddedBy:ownerData,
-        role
-      };
-
-      // Emit to the room associated with the user's email
-      req.io.to(email).emit("user-added", notificationData);
-
+        userAddedBy: ownerData,
+        role,
+      }
+      console.log("🚀 ~ WorkspaceController ~ onUpdateMember ~ isRoleChange:", isRoleChange)
+      if(!isRoleChange){
+        const html = newColabUser(notificationData);
+        this.mailer.SendEmail(email, html);
+      }
+      req.io.to(email).emit("user-added", notificationData)
       return res.status(200).json(updatedWorkspace)
     } catch (error) {
       next(error)

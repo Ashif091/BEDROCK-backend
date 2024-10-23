@@ -4,10 +4,12 @@ import {WorkspaceController} from "../controllers/WorkspaceController"
 import {WorkspaceRepository} from "../../database/repository/WorkspaceRepository"
 import {WorkspaceService} from "../../services/WorkspaceService"
 import {validateToken} from "../middleware/validateToken"
+import { Mailer } from "../../external-libraries/mailer"
 
 const repository = new WorkspaceRepository()
+const mailer = new Mailer()
 const service = new WorkspaceService(repository)
-const controller = new WorkspaceController(service)
+const controller = new WorkspaceController(service,mailer)
 const router = express.Router()
 
 router.get(
