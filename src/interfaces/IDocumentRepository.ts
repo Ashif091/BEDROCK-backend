@@ -6,5 +6,10 @@ export interface IDocumentRepository {
     removeDocument(id: string): Promise<boolean>;
     findDocumentById(id: string): Promise<Document | null>;
     findDocumentsByWorkspaceId(workspaceId: string): Promise<Document[]>;
+    moveDocumentToTrash(documentId: string): Promise<any | null>
+    restoreDocumentFromTrash(documentId: string): Promise<any | null>
+    findTrashedDocumentsByWorkspaceId(workspaceId: string): Promise<any[]>
+    deleteTrashDocById(documentId: string): Promise<any | null>
+    searchTrashedDocumentsByWorkspaceId(workspaceId: string, searchQuery: string): Promise<any[]>
   }
   

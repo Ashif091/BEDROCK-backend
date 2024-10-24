@@ -14,5 +14,9 @@ router.get("/", documentController.findDocumentsByWorkspaceId.bind(documentContr
 router.put("/:id", documentController.updateDocument.bind(documentController));
 router.delete("/:id", documentController.removeDocument.bind(documentController));
 router.get("/:id", documentController.findDocumentById.bind(documentController));
-
+router.delete("/trash/:id", documentController.moveToTrash.bind(documentController));
+router.delete("/trash/delete/:id", documentController.trashDocDeleteById.bind(documentController));
+router.get("/trash/:id", documentController.restoreFromTrash.bind(documentController));
+router.get("/:workspaceId/trash", documentController.getTrashByWorkspaceId.bind(documentController));
+router.post("/trash/search", documentController.searchTrashDoc.bind(documentController));
 export default router;
