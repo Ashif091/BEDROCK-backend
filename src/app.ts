@@ -61,9 +61,14 @@ connectToDatabase()
       console.log(`User connected: ${socket.id}`)
 
       // Handle user joining a room based on their email or user ID
-      socket.on("join-room", (userEmail) => {
+      socket.on("notify", (userEmail) => {
         socket.join(userEmail)
         console.log(`${userEmail} joined their notification room`)
+      })
+      socket.on("updateDoc", (WorkspaceId) => {
+        console.log(`doc added by :${socket.id}`)
+        socket.join(WorkspaceId)
+        console.log(`${WorkspaceId} doc room`)
       })
 
       socket.on("disconnect", () => {

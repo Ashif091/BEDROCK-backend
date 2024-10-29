@@ -13,6 +13,7 @@ export class DocumentController {
     try {
       const documentData: Partial<Document> = req.body
       const newDocument = await this.documentService.addDocument(documentData)
+      req.io.to(newDocument.workspaceId).emit("create-doc",{newDocument,createdBy:req.userId})
       return res.status(201).json(newDocument)
     } catch (error) {
       next(error)
@@ -97,6 +98,9 @@ export class DocumentController {
     try {
       const {id} = req.params
       const document = await this.documentService.restoreDocumentFromTrash(id)
+      // console.log("🚀 ~ DocumentController ~ restoreFromTrash ~ document:", document)
+      // req.io.to(document.workspaceId.toString()).emit("create-doc",{document,createdBy:req.userId})
+
       if (document) {
         res
           .status(200)
