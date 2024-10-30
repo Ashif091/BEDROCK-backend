@@ -129,6 +129,17 @@ connectToDatabase()
         }
       )
 
+      socket.on("media-state-change", ({ type, enabled, roomId }) => {
+        // Broadcast the state change to all other users in the room
+        console.log(roomId,":⏳data media state update",enabled);
+        
+        socket.to(roomId).emit("media-state-changed", {
+          userId: socket.id,
+          type,
+          enabled
+        });
+      });
+
       socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`)
         for (const workspaceId in rooms) {
@@ -150,9 +161,6 @@ connectToDatabase()
         console.log(`${WorkspaceId} doc room`)
       })
 
-      // socket.on("disconnect", () => {
-      //   console.log(`User disconnected: ${socket.id}`)
-      // })
     })
 
     server.listen(port, () => {
