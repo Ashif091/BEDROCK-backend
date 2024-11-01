@@ -12,7 +12,7 @@ const DocumentSchema = new Schema(
     edges: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Workspace",
+        ref: "Document",
       },
     ],
   },

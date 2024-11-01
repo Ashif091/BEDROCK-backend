@@ -13,7 +13,9 @@ export class DocumentController {
     try {
       const documentData: Partial<Document> = req.body
       const newDocument = await this.documentService.addDocument(documentData)
-      req.io.to(newDocument.workspaceId).emit("create-doc",{newDocument,createdBy:req.userId})
+      req.io
+        .to(newDocument.workspaceId)
+        .emit("create-doc", {newDocument, createdBy: req.userId})
       return res.status(201).json(newDocument)
     } catch (error) {
       next(error)
@@ -149,6 +151,25 @@ export class DocumentController {
       )
 
       res.status(200).json(results)
+    } catch (error) {
+      res.status(500).json({message: "Server error", error})
+    }
+  }
+  async onGetDocGraphById(req: Request, res: Response): Promise<void> {
+    try {
+      const {workspaceId} = req.body
+
+      const results = await this.documentService.findDocumentsByWorkspaceId(
+        workspaceId
+      )
+
+      const graphData = results.map((doc) => ({
+        id: doc._id,
+        label: doc.title,
+        link: doc.edges || [],
+      }))
+
+      res.status(200).json(graphData)
     } catch (error) {
       res.status(500).json({message: "Server error", error})
     }

@@ -12,7 +12,7 @@ const TrashSchema = new Schema(
     edges: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Workspace",
+        ref: "Document",
       },
     ],
     deletedAt: {
