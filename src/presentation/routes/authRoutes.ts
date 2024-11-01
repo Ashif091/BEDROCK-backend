@@ -10,6 +10,7 @@ import {Token} from "../../external-libraries/Token"
 import {validateToken} from "../middleware/validateToken"
 import passport from "passport"
 
+
 const repository = new UserRepository()
 const mailer = new Mailer()
 const bcrypt = new Bcrypt()
@@ -43,7 +44,10 @@ router.patch(
   validateToken,
   controller.onPartialUpdateUser.bind(controller)
 )
+router.post("/confirm-subscription",validateToken, controller.onConfirmSubscription.bind(controller))
 router.get("/users/me", validateToken, controller.onUserFind.bind(controller));
 router.get("/user/email/:email", controller.onUserFindByEmail.bind(controller));
+router.get("/user/limit", validateToken, controller.onCheckWorkspaceLimit.bind(controller));
+
 
 export default router

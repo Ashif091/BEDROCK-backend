@@ -8,4 +8,22 @@ export interface User {
   profile?: string;
   verify_token?: string; 
   verified:boolean;
+  subscription?:any
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// {
+//   status: { type: Boolean, required: false }, 
+//   plan: { type: String, required: false },
+//   exp_date: { type: Date, required: false } 
+// }

@@ -8,7 +8,12 @@ const UserSchema = new mongoose.Schema({
   githubId: { type: String, required: false },
   profile:{type:String , required:false},
   verify_token:{type:String , required:false},
-  verified:{type:Boolean , required:true , default:false}
+  verified:{type:Boolean , required:true , default:false},
+  subscription: {
+    status: { type: Boolean, required: false }, 
+    plan: { type: String, required: false },
+    exp_date: { type: Date, required: false } 
+  }
 },{timestamps:true}); 
 
 export const User = mongoose.model("User", UserSchema);

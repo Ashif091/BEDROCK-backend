@@ -14,6 +14,7 @@ export class UserRepository implements IUserRepository {
         profile: User.profile || undefined,
         verify_token: User.verify_token || undefined,
         verified: User.verified,
+        subscription:User.subscription,
       }
       return userData
     }
@@ -126,6 +127,7 @@ export class UserRepository implements IUserRepository {
         profile: updatedUser.profile || undefined,
         verify_token: updatedUser.verify_token || undefined,
         verified: updatedUser.verified,
+        subscription:updatedUser.subscription,
       }
     }
     return null

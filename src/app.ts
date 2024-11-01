@@ -7,6 +7,7 @@ import dotenv from "dotenv"
 import session from "express-session"
 import "./config/passport"
 import authRouter from "./presentation/routes/authRoutes"
+import paymentRoutes from "./presentation/routes/paymentRoutes"
 import workspaceRoutes from "./presentation/routes/workspaceRoutes"
 import documentRoutes from "./presentation/routes/documentRoutes"
 import {errorHandler} from "./presentation/middleware/errorHandler"
@@ -67,10 +68,10 @@ connectToDatabase()
       req.io = io
       next()
     })
-
     app.use("/auth", authRouter)
     app.use("/workspace", workspaceRoutes)
     app.use("/doc", documentRoutes)
+    app.use('/payment', paymentRoutes);
     app.use(errorHandler)
     io.on("connection", (socket) => {
       console.log(`User connected: ${socket.id}`)
