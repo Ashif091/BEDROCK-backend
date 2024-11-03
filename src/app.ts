@@ -19,7 +19,7 @@ dotenv.config()
 const app: Application = express()
 
 const server = createServer(app)
-
+app.use(cookieParser())
 interface User {
   name: string
   profile: string
@@ -39,12 +39,14 @@ const rooms: Rooms = {}
 const io = new Server(server, {
   cors: {
     origin: `${process.env.CLIENT_URL}`,
-    methods: ["GET", "POST"],
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+    // methods: ["GET", "POST"],
   },
 })
 
 app.use(express.json())
-app.use(cookieParser())
+
 app.use(
   cors({
     origin: `${process.env.CLIENT_URL}`,
@@ -71,7 +73,7 @@ connectToDatabase()
     app.use("/auth", authRouter)
     app.use("/workspace", workspaceRoutes)
     app.use("/doc", documentRoutes)
-    app.use('/payment', paymentRoutes);
+    app.use("/payment", paymentRoutes)
     app.use(errorHandler)
     io.on("connection", (socket) => {
       console.log(`User connected: ${socket.id}`)
@@ -84,7 +86,7 @@ connectToDatabase()
 
         userData.socketId = socket.id
         rooms[workspaceId][userData.socketId] = userData
-        
+
         socket.join(workspaceId)
         // console.log("🚀 ~ socket.on ~ rooms:", rooms)
 
@@ -113,33 +115,38 @@ connectToDatabase()
       // WebRTC signaling
       socket.on("offer", (offer, workspaceId: string, toSocketId: string) => {
         console.log("🚀 ~ socket.on ~ offer:", offer)
-        
+
         socket.to(toSocketId).emit("offer", offer, socket.id)
       })
 
       socket.on("answer", (answer, workspaceId: string, toSocketId: string) => {
-
         socket.to(toSocketId).emit("answer", answer, socket.id)
       })
 
       socket.on(
         "ice-candidate",
         (candidate, workspaceId: string, toSocketId: string) => {
-          console.log(toSocketId,":🚀 ~ io.on ~ candidate of id ",socket.id,":", candidate)
+          console.log(
+            toSocketId,
+            ":🚀 ~ io.on ~ candidate of id ",
+            socket.id,
+            ":",
+            candidate
+          )
           socket.to(toSocketId).emit("ice-candidate", candidate, socket.id)
         }
       )
 
-      socket.on("media-state-change", ({ type, enabled, roomId }) => {
+      socket.on("media-state-change", ({type, enabled, roomId}) => {
         // Broadcast the state change to all other users in the room
-        console.log(roomId,":⏳data media state update",enabled);
-        
+        console.log(roomId, ":⏳data media state update", enabled)
+
         socket.to(roomId).emit("media-state-changed", {
           userId: socket.id,
           type,
-          enabled
-        });
-      });
+          enabled,
+        })
+      })
 
       socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`)
@@ -161,7 +168,6 @@ connectToDatabase()
         socket.join(WorkspaceId)
         console.log(`${WorkspaceId} doc room`)
       })
-
     })
 
     server.listen(port, () => {
