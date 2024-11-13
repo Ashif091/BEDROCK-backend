@@ -62,7 +62,7 @@ app.use(
   })
 )
 
-const port = process.env.PORT
+const port = process.env.PORT || 5000
 connectToDatabase()
   .then(() => {
     app.use(passport.initialize())
