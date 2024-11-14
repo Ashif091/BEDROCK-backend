@@ -119,7 +119,7 @@ export class authController {
           })
           res.cookie("accessToken", accessToken, {
             httpOnly: false,
-            secure: true,
+            secure: false,
             maxAge:15 * 60 * 1000,
           })
           const userInfo = {
