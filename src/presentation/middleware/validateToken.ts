@@ -55,8 +55,7 @@ export const validateToken = async (
 
           res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure: false,
             maxAge:15 * 60 * 1000,
           })
           res.setHeader("Authorization", `Bearer ${accessToken}`)
