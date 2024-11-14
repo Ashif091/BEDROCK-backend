@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export class Token implements IToken {
-  private readonly JWT_Key: string = process.env.JWT_SECRET as string
+  private readonly JWT_Key: string = process.env.JWT_SECRET || " "
   private readonly refreshSecret: string =
     process.env.REFRESH_TOKEN_SECRET || " "
   generateTokens(userId: string): {
