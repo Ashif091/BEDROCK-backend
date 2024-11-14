@@ -44,13 +44,11 @@ export class authController {
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       })
       res.cookie("accessToken", accessToken, {
         httpOnly: false,
         secure: true,
-        sameSite: "none",
         maxAge:15 * 60 * 1000,
       })
      return  res.redirect(process.env.CLIENT_URL as string)
