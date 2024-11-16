@@ -51,7 +51,7 @@ export class authController {
         secure: true,
         maxAge:15 * 60 * 1000,
       })
-     return  res.redirect(process.env.CLIENT_URL as string)
+     return  res.redirect(`${process.env.CLIENT_URL}?accessToken=${accessToken}`)
     } catch (error) {
       next(error)
     }
