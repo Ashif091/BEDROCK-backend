@@ -114,12 +114,12 @@ export class authController {
         if (accessToken && refreshToken) {
           res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             maxAge: 24 * 60 * 60 * 1000,
           })
           res.cookie("accessToken", accessToken, {
             httpOnly: false,
-            secure: false,
+            secure: true,
             maxAge:15 * 60 * 1000,
           })
           const userInfo = {
