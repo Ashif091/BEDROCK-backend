@@ -32,7 +32,7 @@ export class authController {
     next: NextFunction
   ) {
     try {
-      console.log("call back fun in controller with user data : ",req.user)
+      console.log("call back fun in controller with user data : ", req.user)
       const user = req.user as any
 
       if (!user) {
@@ -49,17 +49,19 @@ export class authController {
       res.cookie("accessToken", accessToken, {
         httpOnly: false,
         secure: true,
-        maxAge:15 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
       })
-     return  res.redirect(`${process.env.CLIENT_URL}?accessToken=${accessToken}`)
+      return res.redirect(
+        `${process.env.CLIENT_URL}?accessToken=${accessToken}`
+      )
     } catch (error) {
       next(error)
     }
   }
   async onUserFind(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.userId as string;
-      const user = await this.authService.findUserById(userId);
+      const userId = req.userId as string
+      const user = await this.authService.findUserById(userId)
 
       let data = {
         id: user?._id,
@@ -67,14 +69,12 @@ export class authController {
         email: user?.email,
         verified: user?.verified,
         profile: user?.profile,
-      };
-      return res.json(data);
+      }
+      return res.json(data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
-
-
 
   async onVerifyUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -120,7 +120,7 @@ export class authController {
           res.cookie("accessToken", accessToken, {
             httpOnly: false,
             secure: true,
-            maxAge:15 * 60 * 1000,
+            maxAge: 15 * 60 * 1000,
           })
           const userInfo = {
             _id: user._id,
@@ -184,11 +184,11 @@ export class authController {
   }
   async onUserFindByEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const {email} = req.params; 
-      const user = await this.authService.findUserByEmail(email);
+      const {email} = req.params
+      const user = await this.authService.findUserByEmail(email)
 
       if (!user) {
-        return res.status(201).json({});
+        return res.status(201).json({})
       }
 
       const userData = {
@@ -197,42 +197,59 @@ export class authController {
         email: user.email,
         profile: user.profile,
         verified: user.verified,
-      };
+      }
 
-      return res.status(200).json(userData);
+      return res.status(200).json(userData)
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
 
   async onConfirmSubscription(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("body data of", req.userId, ":", req.body);
-      
-      const status = req.body.paymentIntent.status === "succeeded";
+      console.log("body data of", req.userId, ":", req.body)
+
+      const status = req.body.paymentIntent.status === "succeeded"
       const data = {
-        subscription:{
-          status:status,
+        subscription: {
+          status: status,
           plan: req.body.plan as string,
-          availableWorkspace:req.body.availableWorkspace,
-          exp_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) 
-        }
-      };
-      
-      const updatedData = await this.authService.partialUpdateUser(req.userId as string, data);
-      
-      return res.status(200).json({ message: "Subscription confirmed successfully",userDta:updatedData,paymentInfo:req.body.paymentIntent});
+          availableWorkspace: req.body.availableWorkspace,
+          exp_date: new Date(
+            new Date().setFullYear(new Date().getFullYear() + 1)
+          ),
+        },
+      }
+
+      const updatedData = await this.authService.partialUpdateUser(
+        req.userId as string,
+        data
+      )
+
+      return res
+        .status(200)
+        .json({
+          message: "Subscription confirmed successfully",
+          userDta: updatedData,
+          paymentInfo: req.body.paymentIntent,
+        })
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
   async onCheckWorkspaceLimit(req: Request, res: Response, next: NextFunction) {
     try {
       const userInfo = await this.authService.findUserById(req.userId as string)
-      let workspaceCount:number = userInfo?.subscription?userInfo?.subscription.availableWorkspace : 3 ;
-      return res.status(200).json({ workspaceCount,status:userInfo?.subscription.status ===true});
+      let workspaceCount: number = 3
+      if (userInfo?.subscription.status) {
+        workspaceCount = userInfo?.subscription.availableWorkspace
+      }
+      const data = {workspaceCount, status: userInfo?.subscription.status === true}
+      return res
+        .status(200)
+        .json(data)
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
 }
