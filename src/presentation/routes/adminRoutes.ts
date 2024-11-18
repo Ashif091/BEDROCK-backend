@@ -12,16 +12,18 @@ const controller = new AdminController(service)
 const router = express.Router()
 
 router.post("/login", controller.onAdminLogin.bind(controller))
+router.get("/logout", controller.onAdminLogout.bind(controller))
 router.get(
   "/verify",
   validateAdminToken,
   controller.onAdminVerify.bind(controller)
 )
-router.get("/subscriptions", controller.onGetAllSubscriptions.bind(controller))
 router.patch(
   "/subscription/update/:id",
   validateAdminToken,
   controller.updateSubscriptionById.bind(controller)
 )
+// public route
+router.get("/subscriptions", controller.onGetAllSubscriptions.bind(controller))
 
 export default router

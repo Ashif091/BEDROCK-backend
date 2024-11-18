@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
   subscription: {
     status: { type: Boolean, required: false }, 
     plan: { type: String, required: false },
+    availableWorkspace: { type: Number, required: false },
     exp_date: { type: Date, required: false } 
   }
 },{timestamps:true}); 

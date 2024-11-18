@@ -67,4 +67,16 @@ export class AdminController {
       next(error);
     }
   }
+  async onAdminLogout(req: Request, res: Response, next: NextFunction) {
+    try {
+      res.cookie("adminAccessToken", "", {
+        httpOnly: false,
+        secure: true,
+        expires: new Date(0),
+      })
+      return res.status(200).json({message: "Logged out successfully"})
+    } catch (error) {
+      next(error)
+    }
+  }
 }

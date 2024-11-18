@@ -214,6 +214,7 @@ export class authController {
         subscription:{
           status:status,
           plan: req.body.plan as string,
+          availableWorkspace:req.body.availableWorkspace,
           exp_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) 
         }
       };
@@ -228,14 +229,7 @@ export class authController {
   async onCheckWorkspaceLimit(req: Request, res: Response, next: NextFunction) {
     try {
       const userInfo = await this.authService.findUserById(req.userId as string)
-      let workspaceCount:number = 3
-      if(userInfo?.subscription.status){
-        if(userInfo.subscription.plan === "Golden"){
-          workspaceCount = 10
-        }else if(userInfo.subscription.plan === "Platinum"){
-          workspaceCount = 20
-        }
-      }
+      let workspaceCount:number = userInfo?.subscription?userInfo?.subscription.availableWorkspace : 3 ;
       return res.status(200).json({ workspaceCount,status:userInfo?.subscription.status ===true});
     } catch (error) {
       next(error);
