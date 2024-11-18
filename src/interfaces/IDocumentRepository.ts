@@ -11,5 +11,9 @@ export interface IDocumentRepository {
     findTrashedDocumentsByWorkspaceId(workspaceId: string): Promise<any[]>
     deleteTrashDocById(documentId: string): Promise<any | null>
     searchTrashedDocumentsByWorkspaceId(workspaceId: string, searchQuery: string): Promise<any[]>
+    findDocumentByWorkspaceIdAndTitle(
+      workspaceId: string,
+      title: string
+    ): Promise<Document | null> 
   }
   

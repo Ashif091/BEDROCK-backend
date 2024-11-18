@@ -20,4 +20,5 @@ router.delete("/trash/delete/:id",validateToken, documentController.trashDocDele
 router.get("/trash/:id",validateToken, documentController.restoreFromTrash.bind(documentController));
 router.get("/:workspaceId/trash",validateToken, documentController.getTrashByWorkspaceId.bind(documentController));
 router.post("/trash/search",validateToken, documentController.searchTrashDoc.bind(documentController));
+router.post("/link_doc",validateToken, documentController.onAddToLinkDoc.bind(documentController));
 export default router;

@@ -11,4 +11,17 @@ export interface IDocumentService {
   getTrashedDocumentsByWorkspaceId(workspaceId: string): Promise<any[]>;
   deleteTrashedDocumentById(documentId: string): Promise<any | null>
   searchTrashedDocuments(workspaceId: string, searchQuery: string): Promise<any[]>
+  searchDocWithTitle(
+    workspaceId: string,
+    title: string
+  ): Promise<Document | null>
+  addEdge(
+    workspaceId: string,
+    documentId: string,
+    edge: string
+  ): Promise<Document | null>
+  removeEdge(
+    workspaceId: string,
+    documentId: string
+  ): Promise<void>
 }

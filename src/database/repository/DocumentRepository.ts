@@ -128,5 +128,24 @@ export class DocumentRepository implements IDocumentRepository {
       ],
     }).exec();
   }
+  async findDocumentByWorkspaceIdAndTitle(
+    workspaceId: string,
+    title: string
+  ): Promise<Document | null> {
+    const document = await DocumentModel.findOne({ workspaceId, title })
 
+    if (document) {
+      return {
+        _id: document._id.toString(),
+        workspaceId: document.workspaceId.toString(),
+        title: document.title,
+        content: document.content || undefined,
+        edges: document.edges?.map((edge) => edge.toString()) || [],
+        createdAt: document.createdAt,
+        updatedAt: document.updatedAt,
+      }
+    }
+
+    return null
+  }
 }

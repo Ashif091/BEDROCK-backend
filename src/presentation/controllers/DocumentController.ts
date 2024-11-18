@@ -87,6 +87,7 @@ export class DocumentController {
     try {
       const {id} = req.params
       const document = await this.documentService.moveDocumentToTrash(id)
+      await this.documentService.removeEdge(document.workspaceId,id)
       if (document) {
         res.status(200).json({message: "Document moved to trash", document})
       } else {
@@ -100,9 +101,6 @@ export class DocumentController {
     try {
       const {id} = req.params
       const document = await this.documentService.restoreDocumentFromTrash(id)
-      // console.log("🚀 ~ DocumentController ~ restoreFromTrash ~ document:", document)
-      // req.io.to(document.workspaceId.toString()).emit("create-doc",{document,createdBy:req.userId})
-
       if (document) {
         res
           .status(200)
@@ -170,6 +168,38 @@ export class DocumentController {
       }))
 
       res.status(200).json(graphData)
+    } catch (error) {
+      res.status(500).json({message: "Server error", error})
+    }
+  }
+  async onAddToLinkDoc(req: Request, res: Response): Promise<void> {
+    try {
+      const {workspaceId, title, Doc_Id} = req.body
+
+      const existing_doc = await this.documentService.searchDocWithTitle(
+        workspaceId,
+        title
+      )
+      if (!existing_doc) {
+        const data: Partial<Document> = {
+          workspaceId,
+          title,
+        }
+        const new_doc = await this.documentService.addDocument(data)
+        const updatedDocument = await this.documentService.addEdge(
+          workspaceId,
+          Doc_Id,
+          new_doc?._id as string
+        )
+        res.status(200).json({isCreateDoc: true, document: new_doc})
+      } else {
+        const updatedDocument = await this.documentService.addEdge(
+          workspaceId,
+          Doc_Id,
+          existing_doc?._id as string
+        )
+        res.status(200).json({isCreateDoc: false, document: existing_doc})
+      }
     } catch (error) {
       res.status(500).json({message: "Server error", error})
     }
